@@ -1043,11 +1043,11 @@ function formatFecha(isoStr) {
   if(!isoStr) return '—';
   try {
     const d = new Date(isoStr);
-    const dia = d.getDate().toString().padStart(2,'0');
-    const mes = (d.getMonth()+1).toString().padStart(2,'0');
-    const anio = d.getFullYear();
-    const hh = d.getHours().toString().padStart(2,'0');
-    const mm = d.getMinutes().toString().padStart(2,'0');
+    const dia = String(d.getUTCDate()).padStart(2,'0');
+    const mes = String(d.getUTCMonth()+1).padStart(2,'0');
+    const anio = d.getUTCFullYear();
+    const hh = String(d.getUTCHours()).padStart(2,'0');
+    const mm = String(d.getUTCMinutes()).padStart(2,'0');
     return `${dia}/${mes}/${anio} ${hh}:${mm}`;
   } catch(e) { return isoStr; }
 }
@@ -1056,9 +1056,9 @@ function formatFechaSola(isoStr) {
   if(!isoStr) return '—';
   try {
     const d = new Date(isoStr);
-    const dia = d.getDate().toString().padStart(2,'0');
-    const mes = (d.getMonth()+1).toString().padStart(2,'0');
-    const anio = d.getFullYear();
+    const dia = String(d.getUTCDate()).padStart(2,'0');
+    const mes = String(d.getUTCMonth()+1).padStart(2,'0');
+    const anio = d.getUTCFullYear();
     return `${dia}/${mes}/${anio}`;
   } catch(e) { return isoStr; }
 }
