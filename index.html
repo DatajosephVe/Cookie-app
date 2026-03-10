@@ -429,7 +429,68 @@ html, body { height:100%; background:var(--bg); font-family:'Plus Jakarta Sans',
 }
 .status-btn.active-status { background:var(--bd); border-color:var(--bd); color:var(--sand); }
 
-/* TASA PILL */
+/* HEADER STRIP KPIs */
+.header-strip {
+  display:flex;
+  align-items:center;
+  background:rgba(255,255,255,0.07);
+  border-radius:14px;
+  padding:12px 16px;
+  margin-top:18px;
+  gap:0;
+}
+.hstrip-item { flex:1; text-align:center; }
+.hstrip-val { font-family:'Fraunces',serif; font-size:16px; color:var(--cream); }
+.hstrip-lbl { font-size:9px; color:rgba(255,251,233,0.45); margin-top:2px; font-weight:600; letter-spacing:0.3px; }
+.hstrip-div { width:1px; height:30px; background:rgba(255,255,255,0.1); flex-shrink:0; }
+.notif-btn { width:36px; height:36px; background:rgba(255,255,255,0.1); border:none; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+
+/* SECTION HEADER ROW */
+.section-header-row { display:flex; align-items:center; justify-content:space-between; }
+.ver-todas-btn { background:none; border:none; font-size:11px; font-weight:700; color:var(--bm); cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; }
+
+/* ORDEN ACTIVA CARD */
+.orden-card {
+  background:var(--white);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:10px;
+  box-shadow:0 2px 10px rgba(74,48,32,0.07);
+  cursor:pointer;
+  transition:transform 0.15s;
+  animation:fadeUp 0.35s ease both;
+  border-left:3px solid transparent;
+}
+.orden-card:active { transform:scale(0.98); }
+.orden-card.status-pendiente { border-left-color:#B7791F; }
+.orden-card.status-preparacion { border-left-color:var(--bm); }
+.orden-card.status-camino { border-left-color:#4A7A4A; }
+.orden-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.orden-cliente { font-size:13px; font-weight:700; color:var(--bd); }
+.orden-monto { font-family:'Fraunces',serif; font-size:15px; color:var(--bd); }
+.orden-bottom { display:flex; align-items:center; justify-content:space-between; }
+.orden-fecha { font-size:10px; color:var(--muted); }
+.orden-status-pill {
+  display:flex; align-items:center; gap:5px;
+  font-size:10px; font-weight:700;
+  padding:4px 10px;
+  border-radius:20px;
+}
+.pill-pendiente { background:rgba(183,121,31,0.1); color:#B7791F; }
+.pill-preparacion { background:rgba(173,139,115,0.12); color:var(--muted); }
+.pill-camino { background:rgba(74,122,74,0.1); color:#4A7A4A; }
+.pill-dot { width:5px; height:5px; border-radius:50%; }
+.dot-pendiente { background:#B7791F; }
+.dot-preparacion { background:var(--bm); }
+.dot-camino { background:#4A7A4A; }
+.ordenes-empty {
+  background:var(--white);
+  border-radius:14px;
+  padding:20px;
+  text-align:center;
+}
+.ordenes-empty-icon { font-size:28px; margin-bottom:6px; }
+.ordenes-empty-txt { font-size:12px; color:var(--muted); font-weight:600; }
 .tasa-pill {
   background:rgba(173,139,115,0.12);
   border-radius:20px;
@@ -461,25 +522,54 @@ html, body { height:100%; background:var(--bg); font-family:'Plus Jakarta Sans',
           <div class="brand-sub">GESTIÓN</div>
         </div>
       </div>
+      <button class="notif-btn" onclick="goTo('s-nueva-venta')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,251,233,0.7)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
     </div>
     <div>
       <div class="greeting-pre">Bienvenido de vuelta,</div>
       <div class="greeting-name">Joseph 👋</div>
       <div class="greeting-q">¿Qué horneamos hoy?</div>
     </div>
+
+    <!-- KPI STRIP en header -->
+    <div class="header-strip">
+      <div class="hstrip-item">
+        <div class="hstrip-val" id="k-ventas">—</div>
+        <div class="hstrip-lbl">Ventas mes</div>
+      </div>
+      <div class="hstrip-div"></div>
+      <div class="hstrip-item">
+        <div class="hstrip-val" id="k-clientes">—</div>
+        <div class="hstrip-lbl">Clientes</div>
+      </div>
+      <div class="hstrip-div"></div>
+      <div class="hstrip-item">
+        <div class="hstrip-val" id="k-pedidos">—</div>
+        <div class="hstrip-lbl">Pedidos</div>
+      </div>
+      <div class="hstrip-div"></div>
+      <div class="hstrip-item">
+        <div class="hstrip-val" id="k-ganancia">—</div>
+        <div class="hstrip-lbl">Ganancia</div>
+      </div>
+    </div>
   </div>
 
   <div class="scroll">
-    <div class="section">
-      <div class="section-lbl">Resumen del mes</div>
-      <div class="kpi-grid" id="kpi-grid">
-        <div class="kpi-card"><div class="kpi-val" id="k-ventas">—</div><div class="kpi-lbl">Ventas mes</div></div>
-        <div class="kpi-card"><div class="kpi-val" id="k-clientes">—</div><div class="kpi-lbl">Clientes</div></div>
-        <div class="kpi-card"><div class="kpi-val" id="k-ganancia">—</div><div class="kpi-lbl">Ganancia mes</div></div>
-        <div class="kpi-card"><div class="kpi-val" id="k-pedidos">—</div><div class="kpi-lbl">Pedidos</div></div>
+
+    <!-- ÓRDENES ACTIVAS -->
+    <div class="section" style="margin-top:18px;">
+      <div class="section-header-row">
+        <div class="section-lbl" style="margin-bottom:0">Órdenes activas</div>
+        <button class="ver-todas-btn" onclick="goTo('s-ventas')">Ver todas →</button>
+      </div>
+      <div id="ordenes-activas" style="margin-top:10px;">
+        <div class="loading"><div class="spinner"></div></div>
       </div>
     </div>
 
+    <!-- MÓDULOS -->
     <div class="section" style="margin-top:20px; padding-bottom:20px;">
       <div class="section-lbl">Módulos</div>
       <div class="mod-list">
@@ -813,18 +903,76 @@ function updateKPIs() {
     return d.getMonth() === mes && d.getFullYear() === anio;
   });
 
-  const totalMes = ventasMes.reduce((s,v) => s + (parseFloat(v.Total_Venta_USD)||0), 0);
-  const pedidos = ventasMes.length;
+  // Si no hay ventas este mes, mostrar todas (útil cuando data es de mes anterior)
+  const base = ventasMes.length > 0 ? ventasMes : state.ventas;
+  const totalMes = base.reduce((s,v) => s + (parseFloat(v.Total_Venta_USD)||0), 0);
+  const pedidos = base.length;
 
   document.getElementById('k-ventas').textContent = '$' + totalMes.toFixed(2);
   document.getElementById('k-clientes').textContent = state.clientes.length;
   document.getElementById('k-pedidos').textContent = pedidos;
   document.getElementById('k-ganancia').textContent = '—';
 
-  // Header KPIs
-  document.getElementById('hk-total').textContent = '$' + totalMes.toFixed(2);
-  document.getElementById('hk-pedidos').textContent = pedidos;
-  document.getElementById('hk-ganancia').textContent = '—';
+  // Header KPIs en ventas screen
+  const hkTotal = document.getElementById('hk-total');
+  const hkPedidos = document.getElementById('hk-pedidos');
+  const hkGanancia = document.getElementById('hk-ganancia');
+  if(hkTotal) hkTotal.textContent = '$' + totalMes.toFixed(2);
+  if(hkPedidos) hkPedidos.textContent = pedidos;
+  if(hkGanancia) hkGanancia.textContent = '—';
+
+  // Órdenes activas
+  renderOrdenesActivas();
+}
+
+// ===== ÓRDENES ACTIVAS =====
+function renderOrdenesActivas() {
+  const container = document.getElementById('ordenes-activas');
+  if(!container) return;
+
+  const activas = state.ventas.filter(v => {
+    const s = v.Status_Pedido;
+    return s !== 'Finalizado' && s !== 'Cancelado' && s;
+  });
+
+  if(!activas.length) {
+    container.innerHTML = `
+      <div class="ordenes-empty">
+        <div class="ordenes-empty-icon">✅</div>
+        <div class="ordenes-empty-txt">Sin órdenes pendientes</div>
+      </div>`;
+    return;
+  }
+
+  const statusMeta = {
+    'Pendiente':      { cls:'pendiente',   pillCls:'pill-pendiente',   dotCls:'dot-pendiente',   icon:'⏳' },
+    'En Preparación': { cls:'preparacion', pillCls:'pill-preparacion', dotCls:'dot-preparacion', icon:'🥄' },
+    'En Camino':      { cls:'camino',      pillCls:'pill-camino',      dotCls:'dot-camino',      icon:'🚚' },
+  };
+
+  // Orden: En Camino → En Preparación → Pendiente
+  const prioridad = { 'En Camino': 0, 'En Preparación': 1, 'Pendiente': 2 };
+  const sorted = [...activas].sort((a,b) => (prioridad[a.Status_Pedido]??9) - (prioridad[b.Status_Pedido]??9));
+
+  container.innerHTML = sorted.map((v, i) => {
+    const cliente = state.clientes.find(c => c['ID_Cliente (Key)'] === v.ID_Cliente);
+    const nombre = cliente ? cliente.Nombre_Cliente : (v.ID_Cliente || 'Cliente');
+    const meta = statusMeta[v.Status_Pedido] || statusMeta['Pendiente'];
+    return `
+      <div class="orden-card status-${meta.cls}" style="animation-delay:${i*0.06}s" onclick="verVenta('${v.ID_Venta}')">
+        <div class="orden-top">
+          <div class="orden-cliente">${nombre}</div>
+          <div class="orden-monto">$${parseFloat(v.Total_Venta_USD||0).toFixed(2)}</div>
+        </div>
+        <div class="orden-bottom">
+          <div class="orden-fecha">${v.Fecha_Hora || v.Fecha || '—'} · ${v.Metodo_Pago || ''}</div>
+          <div class="orden-status-pill ${meta.pillCls}">
+            <div class="pill-dot ${meta.dotCls}"></div>
+            ${meta.icon} ${v.Status_Pedido}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 // ===== VENTAS LIST =====
@@ -890,7 +1038,9 @@ async function verVenta(id) {
   state.ventaActual = state.ventas.find(v => v.ID_Venta === id);
   if(!state.ventaActual) return;
 
-  goTo('s-detalle-venta');
+  // Navegar si no estamos ya en detalle
+  const curr = navStack[navStack.length-1];
+  if(curr !== 's-detalle-venta') goTo('s-detalle-venta');
 
   const v = state.ventaActual;
   const cliente = state.clientes.find(c => c['ID_Cliente (Key)'] === v.ID_Cliente);
