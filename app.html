@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Cookies — Gestión</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bd: #4A3020;
+  --bm: #AD8B73;
+  --bl: #CEAB93;
+  --sand: #E3CAA5;
+  --cream: #FFFBE9;
+  --bg: #F5ECD8;
+  --white: #ffffff;
+  --muted: #8A6A54;
+  --danger: #C0392B;
+  --success: #4A7A4A;
+  --warning: #B7791F;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; background:var(--bg); font-family:'Plus Jakarta Sans',sans-serif; color:var(--bd); overflow:hidden; }
+
+/* SCREENS */
+.screen { position:fixed; inset:0; display:flex; flex-direction:column; background:var(--bg); opacity:0; pointer-events:none; transform:translateX(100%); transition:all 0.3s cubic-bezier(0.4,0,0.2,1); z-index:1; }
+.screen.active { opacity:1; pointer-events:all; transform:translateX(0); z-index:10; }
+.screen.prev { transform:translateX(-30%); opacity:0.5; }
+
+/* SCROLL */
+.scroll { flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:80px; }
+.scroll::-webkit-scrollbar { display:none; }
+
+/* HEADER */
+.header {
+  background:linear-gradient(145deg, #3A2010, var(--bd));
+  padding:52px 20px 24px;
+  flex-shrink:0;
+  position:relative;
+  overflow:hidden;
+}
+.header::before {
+  content:'';
+  position:absolute;
+  top:-50px; right:-50px;
+  width:200px; height:200px;
+  border-radius:50%;
+  background:rgba(173,139,115,0.07);
+}
+.header-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.back-btn {
+  width:36px; height:36px;
+  background:rgba(255,255,255,0.1);
+  border:none; border-radius:10px;
+  color:var(--cream); font-size:18px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+}
+.header-title { font-family:'Fraunces',serif; font-size:22px; color:var(--cream); }
+.header-action {
+  width:36px; height:36px;
+  background:rgba(255,255,255,0.1);
+  border:none; border-radius:10px;
+  color:var(--sand); font-size:18px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+}
+.header-kpis { display:flex; gap:8px; }
+.hkpi {
+  flex:1;
+  background:rgba(255,255,255,0.08);
+  border-radius:12px;
+  padding:10px 12px;
+  backdrop-filter:blur(10px);
+}
+.hkpi-val { font-family:'Fraunces',serif; font-size:18px; color:var(--cream); }
+.hkpi-lbl { font-size:9px; color:rgba(255,251,233,0.5); margin-top:2px; font-weight:600; letter-spacing:0.5px; }
+
+/* INICIO HEADER */
+.inicio-header {
+  background:linear-gradient(145deg, #3A2010, var(--bd));
+  padding:52px 20px 28px;
+  flex-shrink:0;
+  position:relative;
+  overflow:hidden;
+}
+.inicio-header::before { content:''; position:absolute; top:-60px; right:-60px; width:220px; height:220px; border-radius:50%; background:rgba(173,139,115,0.07); }
+.inicio-header::after { content:''; position:absolute; bottom:-30px; left:40px; width:120px; height:120px; border-radius:50%; background:rgba(227,202,165,0.04); }
+.brand-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+.brand { display:flex; align-items:center; gap:12px; }
+.brand-icon { width:40px; height:40px; background:var(--bm); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+.brand-name { font-family:'Fraunces',serif; font-size:20px; color:var(--cream); }
+.brand-sub { font-size:9px; color:rgba(255,251,233,0.35); letter-spacing:2px; }
+.greeting-pre { font-size:12px; color:rgba(255,251,233,0.5); margin-bottom:4px; }
+.greeting-name { font-family:'Fraunces',serif; font-size:28px; color:var(--cream); }
+.greeting-q { font-size:11px; font-weight:600; color:var(--sand); margin-top:4px; }
+
+/* KPI CARDS */
+.section { padding:18px 16px 0; }
+.section-lbl { font-size:10px; font-weight:700; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
+.kpi-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.kpi-card {
+  background:var(--white);
+  border-radius:16px;
+  padding:14px;
+  box-shadow:0 2px 12px rgba(74,48,32,0.07);
+  position:relative;
+  overflow:hidden;
+  animation:fadeUp 0.4s ease both;
+}
+.kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:16px 16px 0 0; }
+.kpi-card:nth-child(1)::before { background:var(--bm); }
+.kpi-card:nth-child(2)::before { background:var(--bl); }
+.kpi-card:nth-child(3)::before { background:var(--sand); }
+.kpi-card:nth-child(4)::before { background:var(--bd); }
+.kpi-card:nth-child(1){animation-delay:0.05s}
+.kpi-card:nth-child(2){animation-delay:0.1s}
+.kpi-card:nth-child(3){animation-delay:0.15s}
+.kpi-card:nth-child(4){animation-delay:0.2s}
+.kpi-val { font-family:'Fraunces',serif; font-size:22px; color:var(--bd); }
+.kpi-lbl { font-size:10px; color:var(--muted); margin-top:3px; }
+
+/* MODULE GRID */
+.mod-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.mod-card {
+  background:var(--bd);
+  border-radius:18px;
+  padding:16px 14px 14px;
+  cursor:pointer;
+  border:none;
+  text-align:left;
+  position:relative;
+  overflow:hidden;
+  transition:transform 0.15s;
+  animation:fadeUp 0.4s ease both;
+}
+.mod-card::before { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.04); }
+.mod-card:active { transform:scale(0.96); }
+.mod-icon { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:12px; }
+.mod-name { font-size:12px; font-weight:700; color:var(--sand); }
+.mod-desc { font-size:10px; color:rgba(227,202,165,0.45); margin-top:2px; }
+
+/* VENTA LIST */
+.venta-item {
+  background:var(--white);
+  border-radius:14px;
+  padding:14px 16px;
+  margin:0 16px 10px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 2px 8px rgba(74,48,32,0.06);
+  cursor:pointer;
+  transition:transform 0.15s;
+  animation:fadeUp 0.3s ease both;
+}
+.venta-item:active { transform:scale(0.98); }
+.venta-avatar {
+  width:44px; height:44px;
+  background:var(--sand);
+  border-radius:13px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+  flex-shrink:0;
+  font-weight:700;
+  color:var(--bd);
+  font-family:'Fraunces',serif;
+}
+.venta-info { flex:1; min-width:0; }
+.venta-cliente { font-size:13px; font-weight:700; color:var(--bd); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.venta-meta { font-size:10px; color:var(--muted); margin-top:2px; }
+.venta-right { text-align:right; flex-shrink:0; }
+.venta-monto { font-family:'Fraunces',serif; font-size:16px; color:var(--bd); }
+.venta-bs { font-size:9px; color:var(--muted); margin-top:1px; }
+.badge {
+  display:inline-block;
+  font-size:8px; font-weight:700;
+  padding:2px 7px;
+  border-radius:20px;
+  margin-top:4px;
+  letter-spacing:0.3px;
+}
+.badge-fin { background:rgba(74,122,74,0.12); color:#4A7A4A; }
+.badge-pen { background:rgba(183,121,31,0.12); color:#B7791F; }
+.badge-prep { background:rgba(173,139,115,0.15); color:var(--muted); }
+.badge-cam { background:rgba(74,48,32,0.1); color:var(--bd); }
+.badge-can { background:rgba(192,57,43,0.1); color:var(--danger); }
+
+/* FORM */
+.form-wrap { padding:16px; }
+.form-group { margin-bottom:14px; }
+.form-lbl { font-size:10px; font-weight:700; letter-spacing:1px; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:6px; }
+.form-input, .form-select {
+  width:100%;
+  background:var(--white);
+  border:1.5px solid rgba(173,139,115,0.2);
+  border-radius:12px;
+  padding:13px 14px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;
+  color:var(--bd);
+  outline:none;
+  transition:border-color 0.2s;
+  appearance:none;
+}
+.form-input:focus, .form-select:focus { border-color:var(--bm); }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.metodos { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.metodo-btn {
+  background:var(--white);
+  border:1.5px solid rgba(173,139,115,0.2);
+  border-radius:11px;
+  padding:11px 8px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:11px; font-weight:600;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all 0.15s;
+  text-align:center;
+}
+.metodo-btn.sel { background:var(--bd); border-color:var(--bd); color:var(--sand); }
+
+/* DETALLE SECTION */
+.detalle-section {
+  background:var(--white);
+  border-radius:14px;
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.detalle-header {
+  padding:12px 14px;
+  background:rgba(173,139,115,0.08);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:11px; font-weight:700;
+  color:var(--bd);
+  letter-spacing:0.5px;
+}
+.detalle-item {
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border-top:1px solid rgba(173,139,115,0.1);
+}
+.detalle-item:first-child { border-top:none; }
+.detalle-nombre { flex:1; font-size:13px; font-weight:600; color:var(--bd); }
+.detalle-sub { font-size:10px; color:var(--muted); margin-top:1px; }
+.detalle-precio { font-family:'Fraunces',serif; font-size:14px; color:var(--bd); }
+.add-producto-btn {
+  width:100%;
+  background:rgba(173,139,115,0.08);
+  border:1.5px dashed rgba(173,139,115,0.4);
+  border-radius:12px;
+  padding:13px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px; font-weight:600;
+  color:var(--muted);
+  cursor:pointer;
+  margin-bottom:14px;
+}
+
+/* TOTAL BOX */
+.total-box {
+  background:var(--bd);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:14px;
+}
+.total-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.total-row:last-child { margin-bottom:0; padding-top:8px; border-top:1px solid rgba(255,255,255,0.1); }
+.total-lbl { font-size:11px; color:rgba(255,251,233,0.6); }
+.total-val { font-family:'Fraunces',serif; font-size:14px; color:var(--sand); }
+.total-val.big { font-size:20px; color:var(--cream); }
+
+/* SAVE BTN */
+.save-btn {
+  width:100%;
+  background:var(--bm);
+  color:var(--cream);
+  border:none;
+  border-radius:14px;
+  padding:16px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:15px; font-weight:700;
+  cursor:pointer;
+  box-shadow:0 6px 20px rgba(173,139,115,0.4);
+  transition:transform 0.15s, opacity 0.15s;
+}
+.save-btn:active { transform:scale(0.98); }
+.save-btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+/* BOTTOM NAV */
+.bnav {
+  position:fixed;
+  bottom:0; left:0; right:0;
+  height:68px;
+  background:var(--white);
+  border-top:1px solid rgba(173,139,115,0.12);
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  padding:0 8px 6px;
+  box-shadow:0 -8px 24px rgba(74,48,32,0.07);
+  z-index:100;
+}
+.bnav-item { display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 10px; cursor:pointer; border:none; background:none; border-radius:10px; }
+.bnav-icon { font-size:20px; }
+.bnav-lbl { font-size:9px; font-weight:600; color:var(--bl); }
+.bnav-item.active .bnav-lbl { color:var(--bd); font-weight:700; }
+.bnav-center {
+  width:50px; height:50px;
+  background:var(--bd);
+  border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border:none;
+  box-shadow:0 4px 14px rgba(74,48,32,0.3);
+  margin-top:-14px;
+  transition:transform 0.15s;
+}
+.bnav-center:active { transform:scale(0.93); }
+
+/* LOADING */
+.loading {
+  display:flex; align-items:center; justify-content:center;
+  padding:40px; flex-direction:column; gap:12px;
+}
+.spinner {
+  width:32px; height:32px;
+  border:3px solid rgba(173,139,115,0.2);
+  border-top-color:var(--bm);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+.loading-txt { font-size:12px; color:var(--muted); font-weight:600; }
+
+/* EMPTY */
+.empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 20px; gap:10px; }
+.empty-icon { font-size:48px; }
+.empty-txt { font-family:'Fraunces',serif; font-size:18px; color:var(--bd); }
+.empty-sub { font-size:12px; color:var(--muted); text-align:center; }
+
+/* TOAST */
+.toast {
+  position:fixed;
+  bottom:82px; left:16px; right:16px;
+  background:var(--bd);
+  color:var(--sand);
+  padding:14px 18px;
+  border-radius:13px;
+  font-size:13px; font-weight:600;
+  text-align:center;
+  z-index:999;
+  opacity:0;
+  transform:translateY(16px);
+  transition:all 0.3s;
+  pointer-events:none;
+}
+.toast.show { opacity:1; transform:translateY(0); }
+.toast.error { background:var(--danger); color:white; }
+
+/* MODAL PRODUCTO */
+.modal-overlay {
+  position:fixed; inset:0;
+  background:rgba(74,48,32,0.5);
+  backdrop-filter:blur(4px);
+  z-index:200;
+  display:flex; align-items:flex-end;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.3s;
+}
+.modal-overlay.show { opacity:1; pointer-events:all; }
+.modal {
+  background:var(--cream);
+  border-radius:24px 24px 0 0;
+  padding:24px 20px 40px;
+  width:100%;
+  transform:translateY(100%);
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.modal-overlay.show .modal { transform:translateY(0); }
+.modal-title { font-family:'Fraunces',serif; font-size:18px; color:var(--bd); margin-bottom:16px; }
+.modal-handle { width:40px; height:4px; background:rgba(173,139,115,0.3); border-radius:2px; margin:0 auto 16px; }
+
+/* DETAIL VIEW */
+.detail-card {
+  background:var(--white);
+  border-radius:16px;
+  margin:16px 16px 0;
+  overflow:hidden;
+  box-shadow:0 2px 12px rgba(74,48,32,0.07);
+}
+.detail-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:13px 16px;
+  border-bottom:1px solid rgba(173,139,115,0.08);
+}
+.detail-row:last-child { border-bottom:none; }
+.detail-key { font-size:11px; color:var(--muted); font-weight:600; }
+.detail-val { font-size:13px; color:var(--bd); font-weight:600; text-align:right; max-width:60%; }
+
+/* STATUS CHANGE */
+.status-btns { display:flex; gap:8px; flex-wrap:wrap; margin:16px; }
+.status-btn {
+  flex:1; min-width:80px;
+  padding:10px 8px;
+  border-radius:10px;
+  border:1.5px solid rgba(173,139,115,0.2);
+  background:var(--white);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:11px; font-weight:700;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all 0.15s;
+  text-align:center;
+}
+.status-btn.active-status { background:var(--bd); border-color:var(--bd); color:var(--sand); }
+
+/* TASA PILL */
+.tasa-pill {
+  background:rgba(173,139,115,0.12);
+  border-radius:20px;
+  padding:6px 12px;
+  font-size:11px; font-weight:600;
+  color:var(--muted);
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:14px;
+}
+.tasa-dot { width:6px; height:6px; border-radius:50%; background:var(--bm); }
+
+/* ANIMATIONS */
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes spin { to{transform:rotate(360deg)} }
+</style>
+</head>
+<body>
+
+<!-- ===== INICIO ===== -->
+<div class="screen active" id="s-inicio">
+  <div class="inicio-header">
+    <div class="brand-row">
+      <div class="brand">
+        <div class="brand-icon">🍪</div>
+        <div>
+          <div class="brand-name">Cookies</div>
+          <div class="brand-sub">GESTIÓN</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="greeting-pre">Bienvenido de vuelta,</div>
+      <div class="greeting-name">Joseph 👋</div>
+      <div class="greeting-q">¿Qué horneamos hoy?</div>
+    </div>
+  </div>
+
+  <div class="scroll">
+    <div class="section">
+      <div class="section-lbl">Resumen del mes</div>
+      <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi-card"><div class="kpi-val" id="k-ventas">—</div><div class="kpi-lbl">Ventas mes</div></div>
+        <div class="kpi-card"><div class="kpi-val" id="k-clientes">—</div><div class="kpi-lbl">Clientes</div></div>
+        <div class="kpi-card"><div class="kpi-val" id="k-ganancia">—</div><div class="kpi-lbl">Ganancia mes</div></div>
+        <div class="kpi-card"><div class="kpi-val" id="k-pedidos">—</div><div class="kpi-lbl">Pedidos</div></div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:20px; padding-bottom:20px;">
+      <div class="section-lbl">Módulos</div>
+      <div class="mod-grid">
+        <button class="mod-card" onclick="goTo('s-ventas')" style="animation-delay:0.1s">
+          <div class="mod-icon" style="background:#E8D5C4">💰</div>
+          <div class="mod-name">Venta</div>
+          <div class="mod-desc">Registrar pedidos</div>
+        </button>
+        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.15s">
+          <div class="mod-icon" style="background:#D4B896">🥄</div>
+          <div class="mod-name">Producción</div>
+          <div class="mod-desc">Masas y recetas</div>
+        </button>
+        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.2s">
+          <div class="mod-icon" style="background:#C4A07A">🧾</div>
+          <div class="mod-name">Compra</div>
+          <div class="mod-desc">Proveedores</div>
+        </button>
+        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.25s">
+          <div class="mod-icon" style="background:#F0E4D0">👤</div>
+          <div class="mod-name">Cliente</div>
+          <div class="mod-desc">Base de clientes</div>
+        </button>
+        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.3s">
+          <div class="mod-icon" style="background:#E8D5C4">📋</div>
+          <div class="mod-name">Inventario</div>
+          <div class="mod-desc">Stock actual</div>
+        </button>
+        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.35s">
+          <div class="mod-icon" style="background:#D4B896">🍪</div>
+          <div class="mod-name">Productos</div>
+          <div class="mod-desc">Catálogo</div>
+        </button>
+        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.4s">
+          <div class="mod-icon" style="background:#C4A07A">🚚</div>
+          <div class="mod-name">Proveedor</div>
+          <div class="mod-desc">Contactos</div>
+        </button>
+        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.45s">
+          <div class="mod-icon" style="background:#F0E4D0">📝</div>
+          <div class="mod-name">Recetas</div>
+          <div class="mod-desc">Ingredientes</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bnav">
+    <button class="bnav-item active"><span class="bnav-icon">🏠</span><span class="bnav-lbl">Inicio</span></button>
+    <button class="bnav-item" onclick="goTo('s-ventas')"><span class="bnav-icon">📊</span><span class="bnav-lbl">Ventas</span></button>
+    <button class="bnav-center" onclick="goTo('s-nueva-venta')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E3CAA5" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <button class="bnav-item" onclick="showToast('Próximamente')"><span class="bnav-icon">📦</span><span class="bnav-lbl">Stock</span></button>
+    <button class="bnav-item" onclick="showToast('Próximamente')"><span class="bnav-icon">⚙️</span><span class="bnav-lbl">Config</span></button>
+  </div>
+</div>
+
+<!-- ===== VENTAS LIST ===== -->
+<div class="screen" id="s-ventas">
+  <div class="header">
+    <div class="header-row">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="header-title">Ventas</div>
+      <button class="header-action" onclick="goTo('s-nueva-venta')">＋</button>
+    </div>
+    <div class="header-kpis">
+      <div class="hkpi"><div class="hkpi-val" id="hk-total">—</div><div class="hkpi-lbl">ESTE MES</div></div>
+      <div class="hkpi"><div class="hkpi-val" id="hk-pedidos">—</div><div class="hkpi-lbl">PEDIDOS</div></div>
+      <div class="hkpi"><div class="hkpi-val" id="hk-ganancia">—</div><div class="hkpi-lbl">GANANCIA</div></div>
+    </div>
+  </div>
+
+  <div class="scroll" id="ventas-list" style="padding-top:12px;">
+    <div class="loading"><div class="spinner"></div><div class="loading-txt">Cargando ventas...</div></div>
+  </div>
+
+  <div class="bnav">
+    <button class="bnav-item" onclick="goBack()"><span class="bnav-icon">🏠</span><span class="bnav-lbl">Inicio</span></button>
+    <button class="bnav-item active"><span class="bnav-icon">📊</span><span class="bnav-lbl">Ventas</span></button>
+    <button class="bnav-center" onclick="goTo('s-nueva-venta')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E3CAA5" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <button class="bnav-item" onclick="showToast('Próximamente')"><span class="bnav-icon">📦</span><span class="bnav-lbl">Stock</span></button>
+    <button class="bnav-item" onclick="showToast('Próximamente')"><span class="bnav-icon">⚙️</span><span class="bnav-lbl">Config</span></button>
+  </div>
+</div>
+
+<!-- ===== NUEVA VENTA ===== -->
+<div class="screen" id="s-nueva-venta">
+  <div class="header">
+    <div class="header-row">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="header-title">Nueva Venta</div>
+      <div style="width:36px"></div>
+    </div>
+  </div>
+
+  <div class="scroll">
+    <div class="form-wrap">
+
+      <div id="tasa-pill" class="tasa-pill">
+        <div class="tasa-dot"></div>
+        <span>Cargando tasa BCV...</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-lbl">Cliente</label>
+        <select class="form-select" id="f-cliente">
+          <option value="">Seleccionar cliente...</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-lbl">Método de pago</label>
+        <div class="metodos" id="metodos-wrap"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-lbl">Productos del pedido</label>
+        <div id="detalle-lista"></div>
+        <button class="add-producto-btn" onclick="openModalProducto()">＋ Agregar producto</button>
+      </div>
+
+      <div class="total-box" id="total-box">
+        <div class="total-row">
+          <span class="total-lbl">Subtotal USD</span>
+          <span class="total-val" id="t-subtotal">$0.00</span>
+        </div>
+        <div class="total-row">
+          <span class="total-lbl">Tasa BCV</span>
+          <span class="total-val" id="t-tasa">—</span>
+        </div>
+        <div class="total-row">
+          <span class="total-lbl">TOTAL BS</span>
+          <span class="total-val big" id="t-total-bs">Bs. 0.00</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-lbl">Notas</label>
+        <input type="text" class="form-input" id="f-notas" placeholder="Opcional...">
+      </div>
+
+      <button class="save-btn" id="save-btn" onclick="guardarVenta()">✓ Registrar Venta</button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== DETALLE VENTA ===== -->
+<div class="screen" id="s-detalle-venta">
+  <div class="header">
+    <div class="header-row">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="header-title">Detalle Venta</div>
+      <div style="width:36px"></div>
+    </div>
+  </div>
+  <div class="scroll" id="detalle-venta-content"></div>
+</div>
+
+<!-- MODAL AGREGAR PRODUCTO -->
+<div class="modal-overlay" id="modal-producto">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Agregar Producto</div>
+    <div class="form-group">
+      <label class="form-lbl">Producto</label>
+      <select class="form-select" id="m-producto">
+        <option value="">Seleccionar...</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-lbl">Peso (gr)</label>
+        <input type="number" class="form-input" id="m-peso" placeholder="100" min="1">
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Cantidad</label>
+        <input type="number" class="form-input" id="m-cantidad" placeholder="1" value="1" min="1">
+      </div>
+    </div>
+    <div style="background:rgba(173,139,115,0.08); border-radius:10px; padding:10px 12px; margin-bottom:14px; font-size:12px; color:var(--muted);" id="m-preview">
+      Selecciona un producto para ver el precio
+    </div>
+    <button class="save-btn" onclick="addProductoDetalle()">Agregar al pedido</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== CONFIG =====
+const API = 'https://script.google.com/macros/s/AKfycbyjRSOY9cbRwGVrhlFWIzsGPZel-vI9im05_7tRkI8EzdNnA1_I_HhXgJIjVss3nX-znw/exec';
+
+// ===== STATE =====
+let state = {
+  tasa: 0,
+  clientes: [],
+  productos: [],
+  ventas: [],
+  metodos: [],
+  detalleVenta: [],
+  metodoPago: '',
+  ventaActual: null
+};
+
+// ===== NAVIGATION =====
+let navStack = ['s-inicio'];
+
+function goTo(id) {
+  const curr = document.getElementById(navStack[navStack.length-1]);
+  curr.classList.add('prev');
+  setTimeout(() => curr.classList.remove('prev'), 300);
+  curr.classList.remove('active');
+  navStack.push(id);
+  const next = document.getElementById(id);
+  next.classList.add('active');
+  onScreenEnter(id);
+}
+
+function goBack() {
+  if(navStack.length <= 1) return;
+  const curr = document.getElementById(navStack.pop());
+  curr.classList.remove('active');
+  const prev = document.getElementById(navStack[navStack.length-1]);
+  prev.classList.add('active');
+}
+
+function onScreenEnter(id) {
+  if(id === 's-ventas') loadVentas();
+  if(id === 's-nueva-venta') initNuevaVenta();
+}
+
+// ===== API =====
+async function api(params) {
+  try {
+    const url = API + '?' + new URLSearchParams(params);
+    const res = await fetch(url);
+    return await res.json();
+  } catch(e) {
+    console.error(e);
+    return { error: e.message };
+  }
+}
+
+async function apiPost(data) {
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    return await res.json();
+  } catch(e) {
+    return { error: e.message };
+  }
+}
+
+// ===== UUID =====
+function uuid() {
+  return Math.random().toString(36).substr(2,8);
+}
+
+// ===== INIT =====
+async function init() {
+  // Load tasa BCV
+  const t = await api({ action: 'getTasa' });
+  if(t.success) {
+    state.tasa = parseFloat(t.tasa);
+    document.getElementById('tasa-pill').innerHTML =
+      `<div class="tasa-dot"></div><span>Tasa BCV: ${state.tasa.toFixed(2)} Bs/$</span>`;
+  }
+
+  // Load clientes
+  const c = await api({ action: 'getAll', sheet: 'Cliente' });
+  if(c.success) state.clientes = c.data;
+
+  // Load productos
+  const p = await api({ action: 'getAll', sheet: 'Productos' });
+  if(p.success) state.productos = p.data;
+
+  // Load metodos
+  const m = await api({ action: 'getAll', sheet: 'CAT_metodo_pago' });
+  if(m.success) state.metodos = m.data;
+
+  // Load ventas for KPIs
+  const v = await api({ action: 'getAll', sheet: 'Venta' });
+  if(v.success) {
+    state.ventas = v.data;
+    updateKPIs();
+  }
+}
+
+// ===== KPIs =====
+function updateKPIs() {
+  const now = new Date();
+  const mes = now.getMonth();
+  const anio = now.getFullYear();
+
+  const ventasMes = state.ventas.filter(v => {
+    if(!v.Fecha) return false;
+    const parts = v.Fecha.toString().split('/');
+    if(parts.length < 3) return false;
+    const d = new Date(parts[2], parts[1]-1, parts[0]);
+    return d.getMonth() === mes && d.getFullYear() === anio;
+  });
+
+  const totalMes = ventasMes.reduce((s,v) => s + (parseFloat(v.Total_Venta_USD)||0), 0);
+  const pedidos = ventasMes.length;
+
+  document.getElementById('k-ventas').textContent = '$' + totalMes.toFixed(2);
+  document.getElementById('k-clientes').textContent = state.clientes.length;
+  document.getElementById('k-pedidos').textContent = pedidos;
+  document.getElementById('k-ganancia').textContent = '—';
+
+  // Header KPIs
+  document.getElementById('hk-total').textContent = '$' + totalMes.toFixed(2);
+  document.getElementById('hk-pedidos').textContent = pedidos;
+  document.getElementById('hk-ganancia').textContent = '—';
+}
+
+// ===== VENTAS LIST =====
+async function loadVentas() {
+  const container = document.getElementById('ventas-list');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div><div class="loading-txt">Cargando ventas...</div></div>';
+
+  const res = await api({ action: 'getAll', sheet: 'Venta' });
+  if(!res.success) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-txt">Error al cargar</div></div>';
+    return;
+  }
+
+  state.ventas = res.data;
+  updateKPIs();
+
+  if(!res.data.length) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-txt">Sin ventas aún</div><div class="empty-sub">Registra tu primera venta con el botón +</div></div>';
+    return;
+  }
+
+  // Sort by date desc
+  const sorted = [...res.data].reverse();
+  container.innerHTML = sorted.map((v, i) => {
+    const cliente = state.clientes.find(c => c['ID_Cliente (Key)'] === v.ID_Cliente);
+    const nombre = cliente ? cliente.Nombre_Cliente : v.ID_Cliente;
+    const inicial = nombre ? nombre.charAt(0).toUpperCase() : '?';
+    const badge = getBadge(v.Status_Pedido);
+    return `
+      <div class="venta-item" style="animation-delay:${i*0.04}s" onclick="verVenta('${v.ID_Venta}')">
+        <div class="venta-avatar">${inicial}</div>
+        <div class="venta-info">
+          <div class="venta-cliente">${nombre || '—'}</div>
+          <div class="venta-meta">${v.Fecha || ''} · ${v.Metodo_Pago || ''}</div>
+        </div>
+        <div class="venta-right">
+          <div class="venta-monto">$${parseFloat(v.Total_Venta_USD||0).toFixed(2)}</div>
+          <div class="venta-bs">Bs. ${formatNum(v.Total_Venta_BS)}</div>
+          <div class="badge ${badge.cls}">${badge.txt}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function getBadge(status) {
+  const map = {
+    'Finalizado':    { cls:'badge-fin', txt:'Finalizado' },
+    'Pendiente':     { cls:'badge-pen', txt:'Pendiente' },
+    'En Preparación':{ cls:'badge-prep', txt:'En Preparación' },
+    'En Camino':     { cls:'badge-cam', txt:'En Camino' },
+    'Cancelado':     { cls:'badge-can', txt:'Cancelado' },
+  };
+  return map[status] || { cls:'badge-pen', txt: status || 'Pendiente' };
+}
+
+function formatNum(n) {
+  if(!n) return '0.00';
+  return parseFloat(n.toString().replace(',','.')).toFixed(2);
+}
+
+// ===== VER DETALLE VENTA =====
+async function verVenta(id) {
+  state.ventaActual = state.ventas.find(v => v.ID_Venta === id);
+  if(!state.ventaActual) return;
+
+  goTo('s-detalle-venta');
+
+  const v = state.ventaActual;
+  const cliente = state.clientes.find(c => c['ID_Cliente (Key)'] === v.ID_Cliente);
+  const nombreCliente = cliente ? cliente.Nombre_Cliente : v.ID_Cliente;
+  const badge = getBadge(v.Status_Pedido);
+
+  const container = document.getElementById('detalle-venta-content');
+  container.innerHTML = `
+    <div class="detail-card">
+      <div class="detail-row"><span class="detail-key">CLIENTE</span><span class="detail-val">${nombreCliente}</span></div>
+      <div class="detail-row"><span class="detail-key">FECHA</span><span class="detail-val">${v.Fecha_Hora || v.Fecha}</span></div>
+      <div class="detail-row"><span class="detail-key">MÉTODO PAGO</span><span class="detail-val">${v.Metodo_Pago}</span></div>
+      <div class="detail-row"><span class="detail-key">TOTAL USD</span><span class="detail-val">$${parseFloat(v.Total_Venta_USD||0).toFixed(2)}</span></div>
+      <div class="detail-row"><span class="detail-key">TASA BCV</span><span class="detail-val">${v.Tasa_BCV}</span></div>
+      <div class="detail-row"><span class="detail-key">TOTAL BS</span><span class="detail-val">Bs. ${formatNum(v.Total_Venta_BS)}</span></div>
+      <div class="detail-row"><span class="detail-key">NOTAS</span><span class="detail-val">${v.Notas || '—'}</span></div>
+    </div>
+
+    <div style="padding:16px 16px 8px; font-size:10px; font-weight:700; letter-spacing:2px; color:var(--muted);">ESTADO DEL PEDIDO</div>
+    <div class="status-btns">
+      ${['Pendiente','En Preparación','En Camino','Finalizado','Cancelado'].map(s =>
+        `<button class="status-btn ${v.Status_Pedido===s?'active-status':''}" onclick="cambiarStatus('${id}','${s}')">${s}</button>`
+      ).join('')}
+    </div>
+  `;
+}
+
+async function cambiarStatus(id, status) {
+  const res = await apiPost({ action:'update', sheet:'Venta', id, row:{ Status_Pedido: status } });
+  if(res.success) {
+    showToast('Estado actualizado: ' + status);
+    const v = state.ventas.find(v => v.ID_Venta === id);
+    if(v) v.Status_Pedido = status;
+    verVenta(id);
+  } else {
+    showToast('Error al actualizar', true);
+  }
+}
+
+// ===== NUEVA VENTA =====
+function initNuevaVenta() {
+  state.detalleVenta = [];
+  state.metodoPago = '';
+
+  // Clientes
+  const sel = document.getElementById('f-cliente');
+  sel.innerHTML = '<option value="">Seleccionar cliente...</option>' +
+    state.clientes.map(c => `<option value="${c['ID_Cliente (Key)']}">${c.Nombre_Cliente}</option>`).join('');
+
+  // Métodos
+  const mwrap = document.getElementById('metodos-wrap');
+  mwrap.innerHTML = state.metodos.map(m =>
+    `<button class="metodo-btn" onclick="selMetodo(this,'${m.Método_de_Pago}')">${m.Método_de_Pago}</button>`
+  ).join('');
+
+  // Productos modal
+  const msel = document.getElementById('m-producto');
+  msel.innerHTML = '<option value="">Seleccionar...</option>' +
+    state.productos.map(p => `<option value="${p.ID_Producto}" data-precio="${p.Precio_Venta_USD}">${p.Nombre_Producto}</option>`).join('');
+
+  // Tasa
+  document.getElementById('t-tasa').textContent = state.tasa.toFixed(2) + ' Bs/$';
+  document.getElementById('tasa-pill').innerHTML =
+    `<div class="tasa-dot"></div><span>Tasa BCV: ${state.tasa.toFixed(2)} Bs/$</span>`;
+
+  renderDetalle();
+  calcTotal();
+}
+
+function selMetodo(btn, metodo) {
+  document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  state.metodoPago = metodo;
+}
+
+// ===== DETALLE PRODUCTOS =====
+function renderDetalle() {
+  const container = document.getElementById('detalle-lista');
+  if(!state.detalleVenta.length) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = `
+    <div class="detalle-section">
+      <div class="detalle-header">
+        <span>Productos</span>
+        <span>${state.detalleVenta.length} items</span>
+      </div>
+      ${state.detalleVenta.map((item, i) => `
+        <div class="detalle-item">
+          <div style="flex:1">
+            <div class="detalle-nombre">${item.nombre}</div>
+            <div class="detalle-sub">${item.peso}gr × ${item.cantidad} und</div>
+          </div>
+          <div class="detalle-precio">$${(item.subtotal).toFixed(2)}</div>
+          <button onclick="removeItem(${i})" style="background:none;border:none;color:var(--danger);font-size:18px;padding:0 0 0 10px;cursor:pointer;">×</button>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function removeItem(i) {
+  state.detalleVenta.splice(i, 1);
+  renderDetalle();
+  calcTotal();
+}
+
+function calcTotal() {
+  const subtotal = state.detalleVenta.reduce((s, i) => s + i.subtotal, 0);
+  const totalBs = subtotal * state.tasa;
+  document.getElementById('t-subtotal').textContent = '$' + subtotal.toFixed(2);
+  document.getElementById('t-total-bs').textContent = 'Bs. ' + totalBs.toFixed(2);
+}
+
+// ===== MODAL PRODUCTO =====
+function openModalProducto() {
+  document.getElementById('modal-producto').classList.add('show');
+  document.getElementById('m-peso').value = '';
+  document.getElementById('m-cantidad').value = '1';
+  document.getElementById('m-preview').textContent = 'Selecciona un producto para ver el precio';
+}
+
+function closeModal() {
+  document.getElementById('modal-producto').classList.remove('show');
+}
+
+document.getElementById('modal-producto').addEventListener('click', function(e) {
+  if(e.target === this) closeModal();
+});
+
+document.getElementById('m-producto').addEventListener('change', updatePreview);
+document.getElementById('m-peso').addEventListener('input', updatePreview);
+document.getElementById('m-cantidad').addEventListener('input', updatePreview);
+
+function updatePreview() {
+  const sel = document.getElementById('m-producto');
+  const opt = sel.options[sel.selectedIndex];
+  const peso = parseFloat(document.getElementById('m-peso').value) || 0;
+  const cantidad = parseFloat(document.getElementById('m-cantidad').value) || 1;
+
+  if(!opt.value || !peso) {
+    document.getElementById('m-preview').textContent = 'Ingresa el peso para calcular el precio';
+    return;
+  }
+
+  const precio = parseFloat(opt.dataset.precio) || 0;
+  // precio es por kg, calculamos por gramo
+  const precioPorGr = precio / 1000;
+  const subtotal = precioPorGr * peso * cantidad;
+
+  document.getElementById('m-preview').innerHTML =
+    `<strong>${opt.text}</strong><br>
+     ${peso}gr × ${cantidad} und × $${precioPorGr.toFixed(4)}/gr = <strong>$${subtotal.toFixed(2)}</strong>`;
+}
+
+function addProductoDetalle() {
+  const sel = document.getElementById('m-producto');
+  const opt = sel.options[sel.selectedIndex];
+  const peso = parseFloat(document.getElementById('m-peso').value);
+  const cantidad = parseFloat(document.getElementById('m-cantidad').value) || 1;
+
+  if(!opt.value) { showToast('Selecciona un producto', true); return; }
+  if(!peso || peso <= 0) { showToast('Ingresa el peso en gramos', true); return; }
+
+  const precio = parseFloat(opt.dataset.precio) || 0;
+  const precioPorGr = precio / 1000;
+  const subtotal = precioPorGr * peso * cantidad;
+
+  state.detalleVenta.push({
+    id: opt.value,
+    nombre: opt.text,
+    peso,
+    cantidad,
+    precioUnitario: precioPorGr,
+    subtotal
+  });
+
+  closeModal();
+  renderDetalle();
+  calcTotal();
+}
+
+// ===== GUARDAR VENTA =====
+async function guardarVenta() {
+  const clienteId = document.getElementById('f-cliente').value;
+  const notas = document.getElementById('f-notas').value;
+
+  if(!clienteId) { showToast('Selecciona un cliente', true); return; }
+  if(!state.metodoPago) { showToast('Selecciona un método de pago', true); return; }
+  if(!state.detalleVenta.length) { showToast('Agrega al menos un producto', true); return; }
+
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  const subtotal = state.detalleVenta.reduce((s,i) => s + i.subtotal, 0);
+  const totalBs = subtotal * state.tasa;
+  const now = new Date();
+  const fecha = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+  const fechaHora = `${fecha} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const idVenta = uuid();
+
+  // Guardar Venta
+  const venta = {
+    ID_Venta: idVenta,
+    Fecha: fecha,
+    Fecha_Hora: fechaHora,
+    ID_Cliente: clienteId,
+    Tasa_BCV: state.tasa,
+    Metodo_Pago: state.metodoPago,
+    Total_Venta_USD: subtotal.toFixed(2),
+    Total_Venta_BS: totalBs.toFixed(2),
+    Status_Pedido: 'Pendiente',
+    Notas: notas
+  };
+
+  const r1 = await apiPost({ action:'insert', sheet:'Venta', row: venta });
+  if(!r1.success) {
+    showToast('Error al guardar venta', true);
+    btn.disabled = false; btn.textContent = '✓ Registrar Venta';
+    return;
+  }
+
+  // Guardar Venta_Detalle
+  for(const item of state.detalleVenta) {
+    await apiPost({
+      action: 'insert',
+      sheet: 'Venta_Detalle',
+      row: {
+        ID_Detalle: uuid(),
+        ID_Venta: idVenta,
+        ID_Producto: item.id,
+        Cantidad: item.cantidad,
+        Peso_gr: item.peso,
+        Precio_Unitario_USD: item.precioUnitario.toFixed(4),
+        Subtotal_USD: item.subtotal.toFixed(2)
+      }
+    });
+  }
+
+  btn.disabled = false;
+  btn.textContent = '✓ Registrar Venta';
+  showToast('✓ Venta registrada exitosamente');
+  document.getElementById('f-notas').value = '';
+  goBack();
+  setTimeout(() => loadVentas(), 500);
+}
+
+// ===== TOAST =====
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ===== START =====
+init();
+</script>
+</body>
+</html>
