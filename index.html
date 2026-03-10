@@ -120,25 +120,35 @@ html, body { height:100%; background:var(--bg); font-family:'Plus Jakarta Sans',
 .kpi-val { font-family:'Fraunces',serif; font-size:22px; color:var(--bd); }
 .kpi-lbl { font-size:10px; color:var(--muted); margin-top:3px; }
 
-/* MODULE GRID */
-.mod-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.mod-card {
-  background:var(--bd);
-  border-radius:18px;
-  padding:16px 14px 14px;
+/* MODULE LIST */
+.mod-list { display:flex; flex-direction:column; gap:8px; }
+.mod-row {
+  background:var(--white);
+  border-radius:16px;
+  padding:14px;
   cursor:pointer;
   border:none;
   text-align:left;
-  position:relative;
-  overflow:hidden;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  box-shadow:0 2px 8px rgba(74,48,32,0.06);
   transition:transform 0.15s;
   animation:fadeUp 0.4s ease both;
+  width:100%;
 }
-.mod-card::before { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.04); }
-.mod-card:active { transform:scale(0.96); }
-.mod-icon { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:12px; }
-.mod-name { font-size:12px; font-weight:700; color:var(--sand); }
-.mod-desc { font-size:10px; color:rgba(227,202,165,0.45); margin-top:2px; }
+.mod-row:active { transform:scale(0.98); }
+.mod-row-icon {
+  width:48px; height:48px;
+  border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px;
+  flex-shrink:0;
+}
+.mod-row-info { flex:1; }
+.mod-row-name { font-size:14px; font-weight:700; color:var(--bd); }
+.mod-row-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+.mod-row-arrow { font-size:22px; color:var(--bl); font-weight:300; flex-shrink:0; }
 
 /* VENTA LIST */
 .venta-item {
@@ -472,46 +482,70 @@ html, body { height:100%; background:var(--bg); font-family:'Plus Jakarta Sans',
 
     <div class="section" style="margin-top:20px; padding-bottom:20px;">
       <div class="section-lbl">Módulos</div>
-      <div class="mod-grid">
-        <button class="mod-card" onclick="goTo('s-ventas')" style="animation-delay:0.1s">
-          <div class="mod-icon" style="background:#E8D5C4">💰</div>
-          <div class="mod-name">Venta</div>
-          <div class="mod-desc">Registrar pedidos</div>
+      <div class="mod-list">
+        <button class="mod-row" onclick="goTo('s-ventas')" style="animation-delay:0.1s">
+          <div class="mod-row-icon" style="background:#E8D5C4">💰</div>
+          <div class="mod-row-info">
+            <div class="mod-row-name">Venta</div>
+            <div class="mod-row-desc">Registrar y gestionar pedidos</div>
+          </div>
+          <div class="mod-row-arrow">›</div>
         </button>
-        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.15s">
-          <div class="mod-icon" style="background:#D4B896">🥄</div>
-          <div class="mod-name">Producción</div>
-          <div class="mod-desc">Masas y recetas</div>
+        <button class="mod-row" onclick="showToast('Próximamente')" style="animation-delay:0.15s">
+          <div class="mod-row-icon" style="background:#D4B896">🥄</div>
+          <div class="mod-row-info">
+            <div class="mod-row-name">Producción</div>
+            <div class="mod-row-desc">Masas y productos horneados</div>
+          </div>
+          <div class="mod-row-arrow">›</div>
         </button>
-        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.2s">
-          <div class="mod-icon" style="background:#C4A07A">🧾</div>
-          <div class="mod-name">Compra</div>
-          <div class="mod-desc">Proveedores</div>
+        <button class="mod-row" onclick="showToast('Próximamente')" style="animation-delay:0.2s">
+          <div class="mod-row-icon" style="background:#C4A07A">🧾</div>
+          <div class="mod-row-info">
+            <div class="mod-row-name">Compra</div>
+            <div class="mod-row-desc">Registro de compras a proveedores</div>
+          </div>
+          <div class="mod-row-arrow">›</div>
         </button>
-        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.25s">
-          <div class="mod-icon" style="background:#F0E4D0">👤</div>
-          <div class="mod-name">Cliente</div>
-          <div class="mod-desc">Base de clientes</div>
+        <button class="mod-row" onclick="showToast('Próximamente')" style="animation-delay:0.25s">
+          <div class="mod-row-icon" style="background:#F0E4D0">👤</div>
+          <div class="mod-row-info">
+            <div class="mod-row-name">Cliente</div>
+            <div class="mod-row-desc">Base de datos de clientes</div>
+          </div>
+          <div class="mod-row-arrow">›</div>
         </button>
-        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.3s">
-          <div class="mod-icon" style="background:#E8D5C4">📋</div>
-          <div class="mod-name">Inventario</div>
-          <div class="mod-desc">Stock actual</div>
+        <button class="mod-row" onclick="showToast('Próximamente')" style="animation-delay:0.3s">
+          <div class="mod-row-icon" style="background:#E8D5C4">📋</div>
+          <div class="mod-row-info">
+            <div class="mod-row-name">Inventario</div>
+            <div class="mod-row-desc">Control de stock e insumos</div>
+          </div>
+          <div class="mod-row-arrow">›</div>
         </button>
-        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.35s">
-          <div class="mod-icon" style="background:#D4B896">🍪</div>
-          <div class="mod-name">Productos</div>
-          <div class="mod-desc">Catálogo</div>
+        <button class="mod-row" onclick="showToast('Próximamente')" style="animation-delay:0.35s">
+          <div class="mod-row-icon" style="background:#D4B896">🍪</div>
+          <div class="mod-row-info">
+            <div class="mod-row-name">Productos</div>
+            <div class="mod-row-desc">Catálogo y precios</div>
+          </div>
+          <div class="mod-row-arrow">›</div>
         </button>
-        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.4s">
-          <div class="mod-icon" style="background:#C4A07A">🚚</div>
-          <div class="mod-name">Proveedor</div>
-          <div class="mod-desc">Contactos</div>
+        <button class="mod-row" onclick="showToast('Próximamente')" style="animation-delay:0.4s">
+          <div class="mod-row-icon" style="background:#C4A07A">🚚</div>
+          <div class="mod-row-info">
+            <div class="mod-row-name">Proveedor</div>
+            <div class="mod-row-desc">Contactos y categorías</div>
+          </div>
+          <div class="mod-row-arrow">›</div>
         </button>
-        <button class="mod-card" onclick="showToast('Próximamente')" style="animation-delay:0.45s">
-          <div class="mod-icon" style="background:#F0E4D0">📝</div>
-          <div class="mod-name">Recetas</div>
-          <div class="mod-desc">Ingredientes</div>
+        <button class="mod-row" onclick="showToast('Próximamente')" style="animation-delay:0.45s">
+          <div class="mod-row-icon" style="background:#F0E4D0">📝</div>
+          <div class="mod-row-info">
+            <div class="mod-row-name">Recetas</div>
+            <div class="mod-row-desc">Ingredientes y costos</div>
+          </div>
+          <div class="mod-row-arrow">›</div>
         </button>
       </div>
     </div>
