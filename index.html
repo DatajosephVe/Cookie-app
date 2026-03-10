@@ -904,10 +904,10 @@ function updateKPIs() {
 
   const ventasMes = state.ventas.filter(v => {
     if(!v.Fecha) return false;
-    const parts = v.Fecha.toString().split('/');
-    if(parts.length < 3) return false;
-    const d = new Date(parts[2], parts[1]-1, parts[0]);
-    return d.getMonth() === mes && d.getFullYear() === anio;
+    try {
+      const d = new Date(v.Fecha);
+      return d.getMonth() === mes && d.getFullYear() === anio;
+    } catch(e) { return false; }
   });
 
   // Si no hay ventas este mes, mostrar todas (útil cuando data es de mes anterior)
@@ -971,7 +971,7 @@ function renderOrdenesActivas() {
           <div class="orden-monto">$${parseFloat(v.Total_Venta_USD||0).toFixed(2)}</div>
         </div>
         <div class="orden-bottom">
-          <div class="orden-fecha">${v.Fecha_Hora || v.Fecha || '—'} · ${v.Metodo_Pago || ''}</div>
+          <div class="orden-fecha">${v.Fecha_Hora ? formatFecha(v.Fecha_Hora) : formatFechaSola(v.Fecha)} · ${v.Metodo_Pago || ''}</div>
           <div class="orden-status-pill ${meta.pillCls}">
             <div class="pill-dot ${meta.dotCls}"></div>
             ${meta.icon} ${v.Status_Pedido}
@@ -1009,10 +1009,7 @@ async function loadVentas() {
     const nombre = getClienteNombre(v.ID_Cliente);
     const inicial = nombre && nombre !== '—' ? nombre.charAt(0).toUpperCase() : '?';
     const badge = getBadge(v.Status_Pedido);
-    // Fecha_Hora viene como "21/2/2026 14:22:39"
-    const fechaHora = v['Fecha_Hora'] || v['Fecha Hora'] || '';
-    const fechaSola = v['Fecha'] || '';
-    const fechaMostrar = fechaHora || fechaSola || '—';
+    const fechaMostrar = v['Fecha_Hora'] ? formatFecha(v['Fecha_Hora']) : formatFechaSola(v['Fecha']);
     return `
       <div class="venta-item" style="animation-delay:${i*0.04}s" onclick="verVenta('${v.ID_Venta}')">
         <div class="venta-avatar">${inicial}</div>
@@ -1040,6 +1037,30 @@ function getClienteNombre(idCliente) {
   });
   if(c) return c['Nombre_Cliente'] || id;
   return id;
+}
+
+function formatFecha(isoStr) {
+  if(!isoStr) return '—';
+  try {
+    const d = new Date(isoStr);
+    const dia = d.getDate().toString().padStart(2,'0');
+    const mes = (d.getMonth()+1).toString().padStart(2,'0');
+    const anio = d.getFullYear();
+    const hh = d.getHours().toString().padStart(2,'0');
+    const mm = d.getMinutes().toString().padStart(2,'0');
+    return `${dia}/${mes}/${anio} ${hh}:${mm}`;
+  } catch(e) { return isoStr; }
+}
+
+function formatFechaSola(isoStr) {
+  if(!isoStr) return '—';
+  try {
+    const d = new Date(isoStr);
+    const dia = d.getDate().toString().padStart(2,'0');
+    const mes = (d.getMonth()+1).toString().padStart(2,'0');
+    const anio = d.getFullYear();
+    return `${dia}/${mes}/${anio}`;
+  } catch(e) { return isoStr; }
 }
 
 function getBadge(status) {
@@ -1075,7 +1096,7 @@ async function verVenta(id) {
   container.innerHTML = `
     <div class="detail-card">
       <div class="detail-row"><span class="detail-key">CLIENTE</span><span class="detail-val">${nombreCliente}</span></div>
-      <div class="detail-row"><span class="detail-key">FECHA</span><span class="detail-val">${v.Fecha_Hora || v.Fecha}</span></div>
+      <div class="detail-row"><span class="detail-key">FECHA</span><span class="detail-val">${v.Fecha_Hora ? formatFecha(v.Fecha_Hora) : formatFechaSola(v.Fecha)}</span></div>
       <div class="detail-row"><span class="detail-key">MÉTODO PAGO</span><span class="detail-val">${v.Metodo_Pago}</span></div>
       <div class="detail-row"><span class="detail-key">TOTAL USD</span><span class="detail-val">$${parseFloat(v.Total_Venta_USD||0).toFixed(2)}</span></div>
       <div class="detail-row"><span class="detail-key">TASA BCV</span><span class="detail-val">${v.Tasa_BCV}</span></div>
