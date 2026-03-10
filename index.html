@@ -871,11 +871,18 @@ async function init() {
 
   // Load clientes
   const c = await api({ action: 'getAll', sheet: 'Cliente' });
-  if(c.success) state.clientes = c.data;
+  if(c.success) {
+    state.clientes = c.data;
+    // Diagnóstico: ver estructura del primer cliente
+    if(c.data.length > 0) console.log('CLIENTE keys:', JSON.stringify(Object.keys(c.data[0])), '| data:', JSON.stringify(c.data[0]));
+  }
 
   // Load productos
   const p = await api({ action: 'getAll', sheet: 'Productos' });
-  if(p.success) state.productos = p.data;
+  if(p.success) {
+    state.productos = p.data;
+    if(p.data.length > 0) console.log('PRODUCTO keys:', JSON.stringify(Object.keys(p.data[0])));
+  }
 
   // Load metodos
   const m = await api({ action: 'getAll', sheet: 'CAT_metodo_pago' });
@@ -999,7 +1006,7 @@ async function loadVentas() {
     const nombre = getClienteNombre(v.ID_Cliente);
     const inicial = nombre ? nombre.charAt(0).toUpperCase() : '?';
     const badge = getBadge(v.Status_Pedido);
-    const fechaMostrar = v.Fecha_Hora || v.Fecha || '—';
+    const fechaMostrar = v['Fecha_Hora'] || v['Fecha Hora'] || v['fecha_hora'] || v.Fecha || '—';
     return `
       <div class="venta-item" style="animation-delay:${i*0.04}s" onclick="verVenta('${v.ID_Venta}')">
         <div class="venta-avatar">${inicial}</div>
@@ -1022,13 +1029,16 @@ function getClienteNombre(idCliente) {
   if(!idCliente) return '—';
   const id = idCliente.toString().trim();
   const c = state.clientes.find(c => {
-    // Intenta todas las posibles keys del campo ID
-    const keys = Object.keys(c);
-    const idKey = keys.find(k => k.toLowerCase().includes('id_cliente') || k.toLowerCase().includes('id cliente'));
-    const val = idKey ? c[idKey] : null;
-    return val && val.toString().trim() === id;
+    // Busca en TODAS las keys que contengan "cliente" para ser a prueba de variantes
+    for(const k of Object.keys(c)) {
+      if(k.toLowerCase().includes('cliente') || k.toLowerCase().includes('id_cliente')) {
+        if(c[k] && c[k].toString().trim() === id) return true;
+      }
+    }
+    return false;
   });
-  return c ? (c.Nombre_Cliente || c['Nombre Cliente'] || id) : id;
+  if(c) return c['Nombre_Cliente'] || c['Nombre Cliente'] || id;
+  return id;
 }
 
 function getBadge(status) {
@@ -1112,7 +1122,14 @@ function initNuevaVenta() {
   // Productos modal
   const msel = document.getElementById('m-producto');
   msel.innerHTML = '<option value="">Seleccionar...</option>' +
-    state.productos.map(p => `<option value="${p.ID_Producto}" data-precio="${p.Precio_Venta_USD}">${p.Nombre_Producto}</option>`).join('');
+    state.productos
+      .filter(p => p.ID_Producto || p['ID_Producto'])
+      .map(p => {
+        const id = p.ID_Producto || p['ID_Producto'] || '';
+        const nombre = p.Nombre_Producto || p['Nombre_Producto'] || id;
+        const precio = p.Precio_Venta_USD || p['Precio_Venta_USD'] || 0;
+        return `<option value="${id}" data-precio="${precio}">${nombre}</option>`;
+      }).join('');
 
   // Tasa
   document.getElementById('t-tasa').textContent = state.tasa.toFixed(2) + ' Bs/$';
