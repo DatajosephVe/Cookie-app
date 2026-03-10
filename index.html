@@ -1000,13 +1000,19 @@ async function loadVentas() {
     return;
   }
 
+  // Debug: ver keys de primera venta
+  if(res.data.length > 0) console.log('VENTA keys:', JSON.stringify(Object.keys(res.data[0])), '| sample:', JSON.stringify(res.data[0]));
+
   // Sort by date desc
   const sorted = [...res.data].reverse();
   container.innerHTML = sorted.map((v, i) => {
     const nombre = getClienteNombre(v.ID_Cliente);
-    const inicial = nombre ? nombre.charAt(0).toUpperCase() : '?';
+    const inicial = nombre && nombre !== '—' ? nombre.charAt(0).toUpperCase() : '?';
     const badge = getBadge(v.Status_Pedido);
-    const fechaMostrar = v['Fecha_Hora'] || v['Fecha Hora'] || v['fecha_hora'] || v.Fecha || '—';
+    // Fecha_Hora viene como "21/2/2026 14:22:39"
+    const fechaHora = v['Fecha_Hora'] || v['Fecha Hora'] || '';
+    const fechaSola = v['Fecha'] || '';
+    const fechaMostrar = fechaHora || fechaSola || '—';
     return `
       <div class="venta-item" style="animation-delay:${i*0.04}s" onclick="verVenta('${v.ID_Venta}')">
         <div class="venta-avatar">${inicial}</div>
@@ -1024,20 +1030,15 @@ async function loadVentas() {
   }).join('');
 }
 
-// Busca nombre del cliente por ID de forma robusta
+// Busca nombre del cliente por ID — key confirmada: "ID_Cliente (Key)"
 function getClienteNombre(idCliente) {
   if(!idCliente) return '—';
   const id = idCliente.toString().trim();
   const c = state.clientes.find(c => {
-    // Busca en TODAS las keys que contengan "cliente" para ser a prueba de variantes
-    for(const k of Object.keys(c)) {
-      if(k.toLowerCase().includes('cliente') || k.toLowerCase().includes('id_cliente')) {
-        if(c[k] && c[k].toString().trim() === id) return true;
-      }
-    }
-    return false;
+    const val = c['ID_Cliente (Key)'];
+    return val && val.toString().trim() === id;
   });
-  if(c) return c['Nombre_Cliente'] || c['Nombre Cliente'] || id;
+  if(c) return c['Nombre_Cliente'] || id;
   return id;
 }
 
